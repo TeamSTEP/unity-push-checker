@@ -1,19 +1,19 @@
 # unity-check-changes
 
-> A GitHub App built with [Probot](https://github.com/probot/probot) that A Probot app
+> A GitHub App built with [Probot](https://github.com/probot/probot) that checks Unity game project repositories.
 
 ## Setup
 
 ```sh
 # Install dependencies
-npm install
+yarn
 
 # Run with hot reload
-npm run build:watch
+yarn build:watch
 
 # Compile and run
-npm run build
-npm run start
+yarn build
+yarn start
 ```
 
 ## Contributing

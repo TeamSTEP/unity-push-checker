@@ -1,13 +1,13 @@
 {
-  "name": "unity-check-changes",
+  "name": "unity-push-checker",
   "version": "1.0.0",
   "private": true,
-  "description": "A Probot app",
+  "description": "A Github bot plug in that will check for Unity file changes and present it into bullet-points",
   "author": "Hoon Kim <hoonsubin@icloud.com>",
   "license": "ISC",
-  "repository": "https://github.com/hoonsubin/unity-check-changes.git",
-  "homepage": "https://github.com/hoonsubin/unity-check-changes",
-  "bugs": "https://github.com/hoonsubin/unity-check-changes/issues",
+  "repository": "https://github.com/hoonsubin/unity-push-checker.git",
+  "homepage": "https://github.com/hoonsubin/unity-push-checker",
+  "bugs": "https://github.com/hoonsubin/unity-push-checker/issues",
   "keywords": [
     "probot",
     "github",

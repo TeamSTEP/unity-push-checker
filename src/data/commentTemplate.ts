@@ -3,7 +3,7 @@ const emptyEntry = 'None';
 const commentTemplate = (added: string, mod: string, rem: string): string =>
     `# Unity Project Report
 
-These are the files that were changed from the main branch.
+These are the files that were changed from the merging branch.
 
 ## Newly Added Files
 

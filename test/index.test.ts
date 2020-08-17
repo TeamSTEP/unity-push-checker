@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/ban-types */
 // You can import your modules
@@ -48,6 +49,26 @@ describe('My Probot app', () => {
 
             // Receive a webhook event
             await probot.receive({ name: 'issues', payload });
+        },
+        100 * 1000,
+    );
+
+    test(
+        'creates a comment when an pull request is opened',
+        async (done) => {
+            // Test that we correctly return a test token
+            nock('https://api.github.com').post('/app/installations/2/access_tokens').reply(200, { token: 'test' });
+
+            // Test that a comment is posted
+            nock('https://api.github.com')
+                .post('/repos/hiimbex/testing-things/pulls/1/comments', (body: any) => {
+                    done(expect(body).toMatchObject(issueCreatedBody));
+                    return true;
+                })
+                .reply(200);
+
+            // Receive a webhook event
+            await probot.receive({ name: 'pulls', payload });
         },
         100 * 1000,
     );

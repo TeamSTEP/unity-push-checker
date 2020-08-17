@@ -29,7 +29,7 @@ default_events:
   # - member
   # - membership
   # - org_block
-  - organization
+  # - organization
   # - page_build
   # - project
   # - project_card

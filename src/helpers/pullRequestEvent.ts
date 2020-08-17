@@ -4,11 +4,11 @@ import fileExts from '../data/filesToCheck.json';
 import commentTemplate from '../data/commentTemplate';
 import { prChangesToBullet } from './markdownConverter';
 
-const prFilesToFormat = (files: Octokit.Response<Octokit.PullsListFilesResponse>) => {
-    const searchRegex = `^.*\.(${fileExts.join('|')})$`;
+const prFilesToFormat = (files: Octokit.PullsListFilesResponse) => {
+    const searchRegex = new RegExp(`^.*\.(${fileExts.join('|')})$`);
 
-    const changedFiles = files.data.filter((i) => {
-        !!i.filename.match(searchRegex) === true;
+    const changedFiles = files.filter((i) => {
+        return searchRegex.test(i.filename);
     });
 
     const addedFiles: PullRequestCode[] = [];
@@ -52,19 +52,32 @@ export const handlePullRequest = async (context: Context): Promise<void> => {
     const org = pr.base.repo.owner.login;
     const repo = pr.base.repo.name;
 
-    const files = await context.github.pulls.listFiles({
-        number: pr.number,
-        owner: org,
-        repo: repo,
-    });
-
-    const _changes = prFilesToFormat(files);
-
-    const commentBody = commentTemplate(
-        prChangesToBullet(_changes.addedFiles),
-        prChangesToBullet(_changes.moddedFiles),
-        prChangesToBullet(_changes.removedFiles),
+    const allFiles: Octokit.PullsListFilesResponse = await context.github.paginate(
+        context.github.pulls.listFiles({
+            number: pr.number,
+            owner: org,
+            repo: repo,
+        }),
+        (res) => res.data,
     );
+
+    // const files = await context.github.pulls.listFiles({
+    //     number: pr.number,
+    //     owner: org,
+    //     repo: repo,
+    // });
+
+    const _changes = prFilesToFormat(allFiles);
+
+    const commentBody =
+        commentTemplate(
+            prChangesToBullet(_changes.addedFiles),
+            prChangesToBullet(_changes.moddedFiles),
+            prChangesToBullet(_changes.removedFiles),
+        ) +
+        '\nScanned ' +
+        allFiles.length +
+        ' files';
 
     const pull = context.issue();
     // Post a comment on the issue

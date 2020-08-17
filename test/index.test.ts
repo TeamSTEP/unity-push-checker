@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/ban-types */
 // You can import your modules
 // import index from '../src/index'
 
@@ -7,7 +9,7 @@ import myProbotApp from '../src';
 import { Probot } from 'probot';
 // Requiring our fixtures
 import payload from './fixtures/issues.opened.json';
-const issueCreatedBody = { body: 'Thanks for opening this issue!' };
+const issueCreatedBody = { body: 'Hello World!' };
 const fs = require('fs');
 const path = require('path');
 
@@ -30,21 +32,25 @@ describe('My Probot app', () => {
         probot.load(myProbotApp);
     });
 
-    test('creates a comment when an issue is opened', async (done) => {
-        // Test that we correctly return a test token
-        nock('https://api.github.com').post('/app/installations/2/access_tokens').reply(200, { token: 'test' });
+    test(
+        'creates a comment when an issue is opened',
+        async (done) => {
+            // Test that we correctly return a test token
+            nock('https://api.github.com').post('/app/installations/2/access_tokens').reply(200, { token: 'test' });
 
-        // Test that a comment is posted
-        nock('https://api.github.com')
-            .post('/repos/hiimbex/testing-things/issues/1/comments', (body: any) => {
-                done(expect(body).toMatchObject(issueCreatedBody));
-                return true;
-            })
-            .reply(200);
+            // Test that a comment is posted
+            nock('https://api.github.com')
+                .post('/repos/hiimbex/testing-things/issues/1/comments', (body: any) => {
+                    done(expect(body).toMatchObject(issueCreatedBody));
+                    return true;
+                })
+                .reply(200);
 
-        // Receive a webhook event
-        await probot.receive({ name: 'issues', payload });
-    });
+            // Receive a webhook event
+            await probot.receive({ name: 'issues', payload });
+        },
+        100 * 1000,
+    );
 
     afterEach(() => {
         nock.cleanAll();

@@ -22,7 +22,6 @@ export = (app: Application) => {
         //   { owner: 'yourname', repo: 'yourrepo', number: 123, body: 'Hello World !}
         const params = context.issue({ body: 'Hello World!' });
 
-        context.github.pulls.createComment;
         // Post a comment on the issue
         await context.github.issues.createComment(params);
     });

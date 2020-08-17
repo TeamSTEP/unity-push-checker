@@ -11,9 +11,9 @@ const prFilesToFormat = (files: Octokit.Response<Octokit.PullsListFilesResponse>
         !!i.filename.match(searchRegex) === true;
     });
 
-    let addedFiles: PullRequestCode[] = [];
-    let moddedFiles: PullRequestCode[] = [];
-    let removedFiles: PullRequestCode[] = [];
+    const addedFiles: PullRequestCode[] = [];
+    const moddedFiles: PullRequestCode[] = [];
+    const removedFiles: PullRequestCode[] = [];
 
     changedFiles.forEach((e) => {
         switch (e.status) {
@@ -45,7 +45,7 @@ const prFilesToFormat = (files: Octokit.Response<Octokit.PullsListFilesResponse>
     };
 };
 
-export const handlePullRequest = async (context: Context) => {
+export const handlePullRequest = async (context: Context): Promise<void> => {
     const pr = context.payload.pull_request;
     if (!pr || pr.state !== 'open') return;
 

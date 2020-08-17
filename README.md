@@ -1,6 +1,8 @@
 # Unity Push Checker
 
-> A GitHub App built with [Probot](https://github.com/probot/probot) that checks Unity game project repositories.
+> A GitHub App that checks for important changes made to the Unity project without any noise.
+
+![screenshot](img/test-build.jpg)
 
 ## Setup
 

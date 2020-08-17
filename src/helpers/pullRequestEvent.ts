@@ -1,31 +1,19 @@
-import { Context } from 'probot';
-import { PullRequestCode } from 'src/types';
+import { Context, Octokit } from 'probot';
+import { PullRequestCode } from '../types';
 import fileExts from '../data/filesToCheck.json';
-import commentTemplate from 'src/data/commentTemplate';
+import commentTemplate from '../data/commentTemplate';
 import { prChangesToBullet } from './markdownConverter';
 
-export const handlePullRequest = async (context: Context) => {
-    const pr = context.payload.pull_request;
-    if (!pr || pr.state !== 'open') return;
+const prFilesToFormat = (files: Octokit.PullsListFilesResponse) => {
+    const searchRegex = new RegExp(`^.*\.(${fileExts.join('|')})$`);
 
-    const org = pr.base.repo.owner.login;
-    const repo = pr.base.repo.name;
-
-    const files = await context.github.pulls.listFiles({
-        number: pr.number,
-        owner: org,
-        repo: repo,
+    const changedFiles = files.filter((i) => {
+        return searchRegex.test(i.filename);
     });
 
-    const searchRegex = `^.*\.(${fileExts.join('|')})$`;
-
-    const changedFiles = files.data.filter((i) => {
-        !!i.filename.match(searchRegex) === true;
-    });
-
-    let addedFiles: PullRequestCode[] = [];
-    let moddedFiles: PullRequestCode[] = [];
-    let removedFiles: PullRequestCode[] = [];
+    const addedFiles: PullRequestCode[] = [];
+    const moddedFiles: PullRequestCode[] = [];
+    const removedFiles: PullRequestCode[] = [];
 
     changedFiles.forEach((e) => {
         switch (e.status) {
@@ -50,11 +38,40 @@ export const handlePullRequest = async (context: Context) => {
         }
     });
 
-    const commentBody = commentTemplate(
-        prChangesToBullet(addedFiles),
-        prChangesToBullet(moddedFiles),
-        prChangesToBullet(removedFiles),
+    return {
+        addedFiles,
+        moddedFiles,
+        removedFiles,
+    };
+};
+
+export const handlePullRequest = async (context: Context): Promise<void> => {
+    const pr = context.payload.pull_request;
+    if (!pr || pr.state !== 'open') return;
+
+    const org = pr.base.repo.owner.login;
+    const repo = pr.base.repo.name;
+
+    const allFiles: Octokit.PullsListFilesResponse = await context.github.paginate(
+        context.github.pulls.listFiles({
+            number: pr.number,
+            owner: org,
+            repo: repo,
+        }),
+        (res) => res.data,
     );
+
+    const _changes = prFilesToFormat(allFiles);
+
+    const commentBody =
+        commentTemplate(
+            prChangesToBullet(_changes.addedFiles),
+            prChangesToBullet(_changes.moddedFiles),
+            prChangesToBullet(_changes.removedFiles),
+        ) +
+        '\nScanned ' +
+        allFiles.length +
+        ' files';
 
     const pull = context.issue();
     // Post a comment on the issue

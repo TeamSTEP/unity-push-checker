@@ -61,12 +61,6 @@ export const handlePullRequest = async (context: Context): Promise<void> => {
         (res) => res.data,
     );
 
-    // const files = await context.github.pulls.listFiles({
-    //     number: pr.number,
-    //     owner: org,
-    //     repo: repo,
-    // });
-
     const _changes = prFilesToFormat(allFiles);
 
     const commentBody =

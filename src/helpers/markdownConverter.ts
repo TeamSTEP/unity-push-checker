@@ -1,4 +1,4 @@
-import { PullRequestCode } from 'src/types';
+import { PullRequestCode } from '../types';
 
 /**
  * Converts the given Github code changes into a markdown bullet point

@@ -14,9 +14,9 @@ export = (app: Application) => {
         await context.github.issues.createComment(params);
     });
 
-    app.on(['pull_request.opened', 'pull_request.reopened'], handlePullRequest);
+    app.on('pull_request.synchronize', handlePullRequest);
 
-    app.on('pull_request.opened', async (context) => {
+    app.on('pull_request.synchronize', async (context) => {
         // `context` extracts information from the event, which can be passed to
         // GitHub API calls. This will return:
         //   { owner: 'yourname', repo: 'yourrepo', number: 123, body: 'Hello World !}

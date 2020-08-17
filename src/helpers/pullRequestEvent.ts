@@ -1,7 +1,7 @@
 import { Context, Octokit } from 'probot';
-import { PullRequestCode } from 'src/types';
+import { PullRequestCode } from '../types';
 import fileExts from '../data/filesToCheck.json';
-import commentTemplate from 'src/data/commentTemplate';
+import commentTemplate from '../data/commentTemplate';
 import { prChangesToBullet } from './markdownConverter';
 
 const prFilesToFormat = (files: Octokit.Response<Octokit.PullsListFilesResponse>) => {

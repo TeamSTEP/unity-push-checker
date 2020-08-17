@@ -13,9 +13,9 @@
 # The list of events the GitHub App subscribes to.
 # Uncomment the event names below to enable them.
 default_events:
-  # - check_run
+  - check_run
   # - check_suite
-  - commit_comment
+  # - commit_comment
   # - create
   # - delete
   # - deployment
@@ -29,7 +29,7 @@ default_events:
   # - member
   # - membership
   # - org_block
-  # - organization
+  - organization
   # - page_build
   # - project
   # - project_card
@@ -38,11 +38,11 @@ default_events:
   - pull_request
   - pull_request_review
   - pull_request_review_comment
-  - push
+  # - push
   # - release
   - repository
-# - repository_import
-# - status
+  # - repository_import
+  - status
 # - team
 # - team_add
 # - watch
@@ -58,7 +58,7 @@ default_permissions:
 
   # Checks on code.
   # https://developer.github.com/v3/apps/permissions/#permission-on-checks
-  checks: read
+  checks: write
 
   # Repository contents, commits, branches, downloads, releases, and merges.
   # https://developer.github.com/v3/apps/permissions/#permission-on-contents
@@ -80,10 +80,10 @@ default_permissions:
   # pages: read
   # Pull requests and related comments, assignees, labels, milestones, and merges.
   # https://developer.github.com/v3/apps/permissions/#permission-on-pull-requests
-  pull_requests: read
+  pull_requests: write
   # Manage the post-receive hooks for a repository.
   # https://developer.github.com/v3/apps/permissions/#permission-on-repository-hooks
-  repository_hooks: read
+  repository_hooks: write
   # Manage repository projects, columns, and cards.
   # https://developer.github.com/v3/apps/permissions/#permission-on-repository-projects
   # repository_projects: read
@@ -92,7 +92,7 @@ default_permissions:
   # vulnerability_alerts: read
   # Commit statuses.
   # https://developer.github.com/v3/apps/permissions/#permission-on-statuses
-  statuses: read
+  statuses: write
   # Organization members and teams.
   # https://developer.github.com/v3/apps/permissions/#permission-on-members
   # members: read

@@ -5,12 +5,14 @@ import commentTemplate from '../data/commentTemplate';
 import { prChangesToBullet } from './markdownConverter';
 
 const prFilesToFormat = (files: Octokit.PullsListFilesResponse) => {
+    // regex for the file extension that should be checked (source is inside the data folder)
     const searchRegex = new RegExp(`^.*\.(${fileExts.join('|')})$`);
 
     const changedFiles = files.filter((i) => {
         return searchRegex.test(i.filename);
     });
 
+    // initialize item list
     const addedFiles: PullRequestCode[] = [];
     const moddedFiles: PullRequestCode[] = [];
     const removedFiles: PullRequestCode[] = [];
@@ -62,6 +64,11 @@ export const handlePullRequest = async (context: Context): Promise<void> => {
     );
 
     const _changes = prFilesToFormat(allFiles);
+
+    // if there are no relevant changes to the push, do not post a message
+    if (_changes.addedFiles.length === 0 && _changes.moddedFiles.length === 0 && _changes.removedFiles.length === 0) {
+        return;
+    }
 
     const commentBody =
         commentTemplate(

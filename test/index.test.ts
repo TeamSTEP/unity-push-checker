@@ -15,7 +15,7 @@ const fs = require('fs');
 const path = require('path');
 
 describe('My Probot app', () => {
-    let probot: any;
+    let probot: Probot;
     let mockCert: string;
 
     beforeAll((done: Function) => {
@@ -41,8 +41,8 @@ describe('My Probot app', () => {
 
             // Test that a comment is posted
             nock('https://api.github.com')
-                .post('/repos/hiimbex/testing-things/issues/1/comments', (body: any) => {
-                    done(expect(body).toMatchObject(issueCreatedBody));
+                .post('/repos/TeamSTEP/unity-push-checker/issues/4', (content: any) => {
+                    done(expect(content).toMatchObject(issueCreatedBody));
                     return true;
                 })
                 .reply(200);

@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "private": true,
     "description": "A Github bot plug in that will check for Unity file changes and present it into bullet-points",
-    "author": "Hoon Kim <hoonsubin@icloud.com>",
+    "author": "Hoon Kim <hoonkim@teamstep.io>",
     "license": "ISC",
     "repository": "https://github.com/hoonsubin/unity-push-checker.git",
     "homepage": "https://github.com/hoonsubin/unity-push-checker",
@@ -18,7 +18,7 @@
         "build:watch": "tsc && (tsc -w --preserveWatchOutput & nodemon)",
         "dev": "npm run build:watch",
         "start": "probot run ./lib/index.js",
-        "lint": "eslint '*/**/*.ts' --quiet --fix",
+        "lint": "eslint '*/**/*.ts' --max-warnings 1",
         "test": "jest && eslint '*/**/*.ts'",
         "test:watch": "jest --watch --notify --notifyMode=change --coverage"
     },

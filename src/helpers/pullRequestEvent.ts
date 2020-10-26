@@ -81,6 +81,10 @@ export const handlePullRequest = async (context: Context): Promise<void> => {
         ' files';
 
     const pull = context.issue();
+
+    //todo: if a comment already exists in the PR, update the comment rather than making a new one
+    //await context.github.issues.updateComment({...params});
+
     // Post a comment on the issue
     await context.github.issues.createComment({ ...pull, body: commentBody });
 };

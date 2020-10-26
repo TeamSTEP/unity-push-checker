@@ -1,16 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/ban-types */
-// You can import your modules
-// import index from '../src/index'
 
 import nock from 'nock';
 // Requiring our app implementation
 import myProbotApp from '../src';
 import { Probot } from 'probot';
 // Requiring our fixtures
-import payload from './fixtures/issues.opened.json';
-const issueCreatedBody = { body: 'Hello World!' };
+import issuePayload from './fixtures/issues.opened.json';
+//import prOpenPayload from './fixtures/pull_request.reopened.json';
+
 const fs = require('fs');
 const path = require('path');
 
@@ -28,50 +27,44 @@ describe('My Probot app', () => {
 
     beforeEach(() => {
         nock.disableNetConnect();
-        probot = new Probot({ id: 123, cert: mockCert });
+        probot = new Probot({ id: 123, privateKey: mockCert });
         // Load our app into probot
         probot.load(myProbotApp);
     });
 
-    test(
-        'creates a comment when an issue is opened',
-        async (done) => {
-            // Test that we correctly return a test token
-            nock('https://api.github.com').post('/app/installations/2/access_tokens').reply(200, { token: 'test' });
+    test('creates a comment when an issue is opened', async (done) => {
+        const issueCreatedBody = { body: 'this is another issue' };
+        // Test that we correctly return a test token
+        nock('https://api.github.com').post('/app/installations/2/access_tokens').reply(200, { token: 'test' });
 
-            // Test that a comment is posted
-            nock('https://api.github.com')
-                .post('/repos/TeamSTEP/unity-push-checker/issues/4', (content: any) => {
-                    done(expect(content).toMatchObject(issueCreatedBody));
-                    return true;
-                })
-                .reply(200);
+        // Test that a comment is posted
+        nock('https://api.github.com')
+            .post('/repos/hoonsubin/TestyMcTest/issues/20/comments', (content: any) => {
+                probot.log.debug(content);
+                done(expect(content).toMatchObject(issueCreatedBody));
+                return true;
+            })
+            .reply(200);
 
-            // Receive a webhook event
-            await probot.receive({ name: 'issues', payload });
-        },
-        100 * 1000,
-    );
+        // Receive a mock webhook event
+        await probot.receive({ id: '7245c480-178b-11eb-8809-f58eeee32a9a', name: 'issues', payload: issuePayload });
+    });
 
-    test(
-        'creates a comment when an pull request is opened',
-        async (done) => {
-            // Test that we correctly return a test token
-            nock('https://api.github.com').post('/app/installations/2/access_tokens').reply(200, { token: 'test' });
+    // test('creates a comment when an pull request is opened', async (done) => {
+    //     // Test that we correctly return a test token
+    //     nock('https://api.github.com').post('/app/installations/2/access_tokens').reply(200, { token: 'test' });
 
-            // Test that a comment is posted
-            nock('https://api.github.com')
-                .post('/repos/hiimbex/testing-things/pulls/1/comments', (body: any) => {
-                    done(expect(body).toMatchObject(issueCreatedBody));
-                    return true;
-                })
-                .reply(200);
+    //     // Test that a comment is posted
+    //     nock('https://api.github.com')
+    //         .post('/repos/hoonsubin/TestyMcTest/pulls/18', (body: any) => {
+    //             done(expect(body).toMatchObject(issueCreatedBody));
+    //             return true;
+    //         })
+    //         .reply(200);
 
-            // Receive a webhook event
-            await probot.receive({ name: 'pulls', payload });
-        },
-        100 * 1000,
-    );
+    //     // Receive a webhook event
+    //     await probot.receive({ id: '5325', name: 'pull_request', payload: prOpenPayload });
+    // });
 
     afterEach(() => {
         nock.cleanAll();

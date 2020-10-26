@@ -1,13 +1,13 @@
-import { Context, Octokit } from 'probot';
+import { Context } from 'probot';
 import { PullRequestCode } from '../types';
 import fileExts from '../data/filesToCheck.json';
 import commentTemplate from '../data/commentTemplate';
-import { prChangesToBullet } from './markdownConverter';
+import { prChangesToBullet } from '../helpers/markdownConverter';
+import { PullsListFilesResponseData } from '@octokit/types';
 
-const prFilesToFormat = (files: Octokit.PullsListFilesResponse) => {
+const prFilesToFormat = (files: PullsListFilesResponseData) => {
     // regex for the file extension that should be checked (source is inside the data folder)
     const searchRegex = new RegExp(`^.*\.(${fileExts.join('|')})$`);
-
     const changedFiles = files.filter((i) => {
         return searchRegex.test(i.filename);
     });
@@ -49,32 +49,36 @@ const prFilesToFormat = (files: Octokit.PullsListFilesResponse) => {
 
 export const handlePullRequest = async (context: Context): Promise<void> => {
     const pr = context.payload.pull_request;
-    if (!pr || pr.state !== 'open') return;
+    // ensure that this handler is running for a pull request
+    if (!pr || pr.state !== 'open' || context.isBot) return;
 
-    const org = pr.base.repo.owner.login;
-    const repo = pr.base.repo.name;
+    const org = pr.base.repo.owner.login as string; // name (id) of the owner
+    const repo = pr.base.repo.name as string; // name of the repository
+    const issueNo = pr.number as number;
 
-    const allFiles: Octokit.PullsListFilesResponse = await context.github.paginate(
-        context.github.pulls.listFiles({
-            number: pr.number,
-            owner: org,
-            repo: repo,
-        }),
+    const filesChanged = Number.parseInt(pr.changed_files);
+
+    if (filesChanged < 3000) {
+    }
+
+    const allFiles = await context.github.paginate(
+        context.github.pulls.listFiles,
+        context.pullRequest({ owner: org, repo: repo, pull_number: issueNo }),
         (res) => res.data,
     );
 
-    const _changes = prFilesToFormat(allFiles);
+    const changes = prFilesToFormat(allFiles);
 
     // if there are no relevant changes to the push, do not post a message
-    if (_changes.addedFiles.length === 0 && _changes.moddedFiles.length === 0 && _changes.removedFiles.length === 0) {
+    if (changes.addedFiles.length === 0 && changes.moddedFiles.length === 0 && changes.removedFiles.length === 0) {
         return;
     }
 
     const commentBody =
         commentTemplate(
-            prChangesToBullet(_changes.addedFiles),
-            prChangesToBullet(_changes.moddedFiles),
-            prChangesToBullet(_changes.removedFiles),
+            prChangesToBullet(changes.addedFiles),
+            prChangesToBullet(changes.moddedFiles),
+            prChangesToBullet(changes.removedFiles),
         ) +
         '\nScanned ' +
         allFiles.length +

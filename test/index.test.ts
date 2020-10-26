@@ -25,7 +25,7 @@ describe('My Probot app', () => {
         });
     });
 
-    beforeEach(() => {
+    beforeEach(async () => {
         nock.disableNetConnect();
         probot = new Probot({ id: 123, privateKey: mockCert });
         // Load our app into probot
@@ -39,7 +39,7 @@ describe('My Probot app', () => {
 
         // Test that a comment is posted
         nock('https://api.github.com')
-            .post('/repos/hoonsubin/TestyMcTest/issues/20/comments', (content: any) => {
+            .post('/repos/hoonsubin/TestyMcTest/issues/20', (content: any) => {
                 probot.log.debug(content);
                 done(expect(content).toMatchObject(issueCreatedBody));
                 return true;

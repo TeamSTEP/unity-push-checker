@@ -56,11 +56,6 @@ export const handlePullRequest = async (context: Context): Promise<void> => {
     const repo = pr.base.repo.name as string; // name of the repository
     const issueNo = pr.number as number;
 
-    const filesChanged = Number.parseInt(pr.changed_files);
-
-    if (filesChanged < 3000) {
-    }
-
     const allFiles = await context.github.paginate(
         context.github.pulls.listFiles,
         context.pullRequest({ owner: org, repo: repo, pull_number: issueNo }),
@@ -70,7 +65,7 @@ export const handlePullRequest = async (context: Context): Promise<void> => {
     const changes = prFilesToFormat(allFiles);
 
     // if there are no relevant changes to the push, do not post a message
-    if (changes.addedFiles.length === 0 && changes.moddedFiles.length === 0 && changes.removedFiles.length === 0) {
+    if (changes.addedFiles.length + changes.moddedFiles.length + changes.removedFiles.length < 1) {
         return;
     }
 
@@ -87,7 +82,7 @@ export const handlePullRequest = async (context: Context): Promise<void> => {
     const pull = context.issue();
 
     //todo: if a comment already exists in the PR, update the comment rather than making a new one
-    //await context.github.issues.updateComment({...params});
+    await context.github.issues.updateComment({ ...pull, body: commentBody, comment_id: 32 });
 
     // Post a comment on the issue
     await context.github.issues.createComment({ ...pull, body: commentBody });

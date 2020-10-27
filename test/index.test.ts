@@ -1,21 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/ban-types */
-// You can import your modules
-// import index from '../src/index'
 
 import nock from 'nock';
 // Requiring our app implementation
 import myProbotApp from '../src';
-import { Probot } from 'probot';
+import { Probot, ProbotOctokit } from 'probot';
 // Requiring our fixtures
-import payload from './fixtures/issues.opened.json';
-const issueCreatedBody = { body: 'Hello World!' };
+import issueOpenPayload from './fixtures/issues.opened.json';
+import prReopenPayload from './fixtures/pull_request.reopened.json';
+import prFilesRes from './fixtures/pull_request.files.json';
+//import prCheckExpectedRes from './fixtures/pr-check-msg.json';
+
 const fs = require('fs');
 const path = require('path');
 
-describe('My Probot app', () => {
-    let probot: any;
+describe('Github bot tests', () => {
+    let probot: Probot;
     let mockCert: string;
 
     beforeAll((done: Function) => {
@@ -26,52 +27,55 @@ describe('My Probot app', () => {
         });
     });
 
-    beforeEach(() => {
+    beforeEach(async () => {
         nock.disableNetConnect();
-        probot = new Probot({ id: 123, cert: mockCert });
+        probot = new Probot({ privateKey: mockCert, githubToken: 'test', Octokit: ProbotOctokit });
         // Load our app into probot
-        probot.load(myProbotApp);
+        const app = probot.load(myProbotApp);
+        await app.auth();
+        // Test that we correctly return a test token
+        nock('https://api.github.com').post('/app/installations/78039/access_tokens').reply(200, { token: 'test' });
     });
 
-    test(
-        'creates a comment when an issue is opened',
-        async (done) => {
-            // Test that we correctly return a test token
-            nock('https://api.github.com').post('/app/installations/2/access_tokens').reply(200, { token: 'test' });
+    it('creates a comment when an issue is opened', async (done) => {
+        nock('https://api.github.com')
+            .post('/repos/hoonsubin/TestyMcTest/issues/20/comments', (body: any) => {
+                // Test that a comment is posted
+                done(expect(body).toMatchObject({ body: 'Hello World!' }));
+                return true;
+            })
+            .reply(200);
 
-            // Test that a comment is posted
-            nock('https://api.github.com')
-                .post('/repos/hiimbex/testing-things/issues/1/comments', (body: any) => {
-                    done(expect(body).toMatchObject(issueCreatedBody));
-                    return true;
-                })
-                .reply(200);
+        // Receive a mock webhook event
+        await probot.receive({
+            id: '7245c480-178b-11eb-8809-f58eeee32a9a',
+            name: 'issues.opened',
+            payload: issueOpenPayload,
+        });
+    });
 
-            // Receive a webhook event
-            await probot.receive({ name: 'issues', payload });
-        },
-        100 * 1000,
-    );
+    it('changes the description when a pr is reopened', async (done) => {
+        // send a list of files upon request
+        nock('https://api.github.com').get('/repos/hoonsubin/TestyMcTest/pulls/18/files').reply(200, prFilesRes);
 
-    test(
-        'creates a comment when an pull request is opened',
-        async (done) => {
-            // Test that we correctly return a test token
-            nock('https://api.github.com').post('/app/installations/2/access_tokens').reply(200, { token: 'test' });
+        nock('https://api.github.com')
+            .patch('/repos/hoonsubin/TestyMcTest/pulls/18', (body: any) => {
+                //note: we're not using a full body match due to a strange bug
+                //done(expect(body).toMatchObject(prCheckExpectedRes));
 
-            // Test that a comment is posted
-            nock('https://api.github.com')
-                .post('/repos/hiimbex/testing-things/pulls/1/comments', (body: any) => {
-                    done(expect(body).toMatchObject(issueCreatedBody));
-                    return true;
-                })
-                .reply(200);
+                // check if the report header has been added to the body
+                done(expect(body.body).toMatch('## Unity Project Report'));
+                return true;
+            })
+            .reply(200);
 
-            // Receive a webhook event
-            await probot.receive({ name: 'pulls', payload });
-        },
-        100 * 1000,
-    );
+        // Receive a mock webhook event
+        await probot.receive({
+            id: '7245c480-178b-11eb-8809-f58eeee32a9a',
+            name: 'pull_request.reopened',
+            payload: prReopenPayload,
+        });
+    });
 
     afterEach(() => {
         nock.cleanAll();

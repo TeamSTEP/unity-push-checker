@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "private": true,
     "description": "A Github bot plug in that will check for Unity file changes and present it into bullet-points",
-    "author": "Hoon Kim <hoonsubin@icloud.com>",
+    "author": "Hoon Kim <hoonkim@teamstep.io>",
     "license": "ISC",
     "repository": "https://github.com/hoonsubin/unity-push-checker.git",
     "homepage": "https://github.com/hoonsubin/unity-push-checker",
@@ -16,36 +16,39 @@
     "scripts": {
         "build": "tsc",
         "build:watch": "tsc && (tsc -w --preserveWatchOutput & nodemon)",
-        "dev": "npm run build:watch",
+        "dev": "yarn build:watch",
         "start": "probot run ./lib/index.js",
-        "lint": "eslint '*/**/*.ts' --quiet --fix",
+        "lint": "eslint '*/**/*.ts' --max-warnings 1",
         "test": "jest && eslint '*/**/*.ts'",
         "test:watch": "jest --watch --notify --notifyMode=change --coverage"
     },
     "dependencies": {
-        "probot": "^9.5.3"
+        "lodash": "^4.17.20",
+        "probot": "^10.9.5"
     },
     "devDependencies": {
-        "@types/jest": "^25.1.0",
+        "@octokit/types": "^5.5.0",
+        "@types/jest": "^26.0.0",
+        "@types/lodash": "^4.14.162",
         "@types/nock": "^11.1.0",
-        "@types/node": "^13.1.0",
-        "@typescript-eslint/eslint-plugin": "^3.9.0",
-        "@typescript-eslint/parser": "^3.9.0",
-        "eslint": "^7.7.0",
-        "eslint-config-prettier": "^6.11.0",
+        "@types/node": "^14.14.3",
+        "@typescript-eslint/eslint-plugin": "^4.5.0",
+        "@typescript-eslint/parser": "^4.5.0",
+        "eslint": "^7.12.0",
+        "eslint-config-prettier": "^6.14.0",
         "eslint-plugin-prettier": "^3.1.4",
         "eslint-plugin-typescript": "^0.14.0",
-        "jest": "^24.9.0",
-        "nock": "^12.0.0",
-        "nodemon": "^2.0.0",
-        "prettier": "^2.0.5",
-        "smee-client": "^1.1.0",
-        "standard": "^14.3.1",
-        "ts-jest": "^25.1.0",
-        "typescript": "^3.6.4"
+        "jest": "^26.6.1",
+        "nock": "^13.0.4",
+        "nodemon": "^2.0.6",
+        "prettier": "^2.1.2",
+        "smee-client": "^1.2.2",
+        "standard": "^15.0.0",
+        "ts-jest": "^26.4.2",
+        "typescript": "^4.0.3"
     },
     "engines": {
-        "node": ">= 8.3.0"
+        "node": ">=12.x"
     },
     "standard": {
         "parser": "@typescript-eslint/parser",

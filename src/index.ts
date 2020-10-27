@@ -1,16 +1,33 @@
-import { Application } from 'probot'; // eslint-disable-line no-unused-vars
-import { handlePullRequest } from './helpers/pullRequestEvent';
+import { Application } from 'probot';
+import * as Controllers from './controllers';
 
-export = (app: Application): void => {
-    // app.on(['issues.opened', 'issues.reopened'], async (context) => {
-    //     // `context` extracts information from the event, which can be passed to
-    //     // GitHub API calls. This will return:
-    //     //   { owner: 'yourname', repo: 'yourrepo', number: 123, body: 'Hello World !}
-    //     const params = context.issue({ body: 'Hello World!' });
+export = async (app: Application) => {
+    app.on(['pull_request.opened', 'pull_request.reopened', 'pull_request.synchronize'], (context) => {
+        try {
+            const pr = context.payload.pull_request;
 
-    //     // Post a comment on the issue
-    //     await context.github.issues.createComment(params);
-    // });
+            app.log(
+                `Pull request number ${pr.number} from ${pr.base.repo.owner.login}/${pr.base.repo.name} emitted a new event`,
+            );
 
-    app.on(['pull_request.opened', 'pull_request.reopened', 'pull_request.synchronize'], handlePullRequest);
+            Controllers.PullRequestHandlers.handlePullRequest(context);
+            app.log('Report created');
+        } catch (e) {
+            app.log.error(e);
+        }
+    });
+
+    // this is for debugging only
+    app.on('issues.opened', async (context) => {
+        try {
+            const newIssue = context.payload.issue;
+            app.log(`User ${newIssue.user.login} opened a new issue with the name ${newIssue.title}`);
+
+            const pull = context.issue();
+
+            await context.github.issues.createComment({ ...pull, body: 'Hello World!' });
+        } catch (e) {
+            app.log(e);
+        }
+    });
 };

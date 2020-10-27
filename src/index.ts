@@ -2,7 +2,7 @@ import { Application } from 'probot';
 import * as Controllers from './controllers';
 
 export = async (app: Application) => {
-    app.on(['pull_request.opened', 'pull_request.reopened', 'pull_request.synchronize'], (context) => {
+    app.on(['pull_request.opened', 'pull_request.reopened', 'pull_request.synchronize'], async (context) => {
         try {
             const pr = context.payload.pull_request;
 
@@ -10,8 +10,7 @@ export = async (app: Application) => {
                 `Pull request number ${pr.number} from ${pr.base.repo.owner.login}/${pr.base.repo.name} emitted a new event`,
             );
 
-            Controllers.PullRequestHandlers.handlePullRequest(context);
-            app.log('Report created');
+            await Controllers.PullRequestHandlers.handlePullRequest(context);
         } catch (e) {
             app.log.error(e);
         }

@@ -18,8 +18,8 @@
         "build:watch": "tsc && (tsc -w --preserveWatchOutput & nodemon)",
         "dev": "yarn build:watch",
         "start": "probot run ./lib/index.js",
-        "lint": "eslint '*/**/*.ts' --max-warnings 1",
-        "test": "jest && eslint '*/**/*.ts'",
+        "lint": "eslint '*/**/*.ts' --fix",
+        "test": "export DEBUG=nock.* && jest && eslint '*/**/*.ts'",
         "test:watch": "jest --watch --notify --notifyMode=change --coverage"
     },
     "dependencies": {

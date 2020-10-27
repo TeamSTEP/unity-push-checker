@@ -1,4 +1,4 @@
-import { Application } from 'probot'; // eslint-disable-line no-unused-vars
+import { Application } from 'probot';
 import * as Controllers from './controllers';
 
 export = async (app: Application) => {
@@ -17,6 +17,7 @@ export = async (app: Application) => {
         }
     });
 
+    // this is for debugging only
     app.on('issues.opened', async (context) => {
         try {
             const newIssue = context.payload.issue;

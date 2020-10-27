@@ -1,26 +1,26 @@
 const emptyEntry = 'None';
 
 const commentTemplate = (added: string, mod: string, rem: string): string =>
-    `# Unity Project Report
+    `\n
+----
+## Unity Project Report
 
 These are the files that were changed from the merging branch.
 
-## Newly Added Files
+### Newly Added Files
 
 ${added ? added : emptyEntry}
 
-## Modified Files
+### Modified Files
 
 ${mod ? mod : emptyEntry}
 
-## Removed Files
+### Removed Files
 
 ${rem ? rem : emptyEntry}
 
-----
 End of report
-
-This bot was made by [Hoon Kim](https://github.com/hoonsubin) with love :)
+----
 `;
 
 export default commentTemplate;

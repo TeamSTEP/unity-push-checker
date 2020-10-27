@@ -1,29 +1,30 @@
 import { Application } from 'probot'; // eslint-disable-line no-unused-vars
 import * as Controllers from './controllers';
 
-export = async (app: Application): Promise<void> => {
-    await app.auth(process.env.APP_ID ? Number.parseInt(process.env.APP_ID) : undefined);
-    //const a = new Application({});
-
-    app.log('Github bot is running');
-
+export = async (app: Application) => {
     app.on(['pull_request.opened', 'pull_request.reopened', 'pull_request.synchronize'], (context) => {
-        const pr = context.payload.pull_request;
+        try {
+            const pr = context.payload.pull_request;
 
-        app.log(
-            `Pull request number ${pr.number} from ${pr.base.repo.owner.login}/${pr.base.repo.name}emitted a new event`,
-        );
+            app.log(
+                `Pull request number ${pr.number} from ${pr.base.repo.owner.login}/${pr.base.repo.name} emitted a new event`,
+            );
 
-        Controllers.PullRequestHandlers.handlePullRequest(context);
+            Controllers.PullRequestHandlers.handlePullRequest(context);
+            app.log('Report created');
+        } catch (e) {
+            app.log.error(e);
+        }
     });
 
     app.on('issues.opened', async (context) => {
         try {
-            app.log(context.payload);
+            const newIssue = context.payload.issue;
+            app.log(`User ${newIssue.user.login} opened a new issue with the name ${newIssue.title}`);
 
-            const pull = context.issue({ body: 'Hello World!' });
+            const pull = context.issue();
 
-            await context.github.issues.createComment({ ...pull });
+            await context.github.issues.createComment({ ...pull, body: 'Hello World!' });
         } catch (e) {
             app.log(e);
         }

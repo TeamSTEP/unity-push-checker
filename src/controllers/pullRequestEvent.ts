@@ -1,89 +1,38 @@
 import { Context } from 'probot';
-import { PullRequestCode } from '../types';
-import fileExts from '../data/filesToCheck.json';
 import commentTemplate from '../data/commentTemplate';
 import { prChangesToBullet } from '../helpers/markdownConverter';
-import { PullsListFilesResponseData } from '@octokit/types';
+import * as Helpers from '../helpers';
 
-const prFilesToFormat = (files: PullsListFilesResponseData) => {
-    // regex for the file extension that should be checked (source is inside the data folder)
-    const searchRegex = new RegExp(`^.*\.(${fileExts.join('|')})$`);
-    const changedFiles = files.filter((i) => {
-        return searchRegex.test(i.filename);
-    });
-
-    // initialize item list
-    const addedFiles: PullRequestCode[] = [];
-    const moddedFiles: PullRequestCode[] = [];
-    const removedFiles: PullRequestCode[] = [];
-
-    changedFiles.forEach((e) => {
-        switch (e.status) {
-            case 'modified':
-                moddedFiles.push({
-                    fileName: e.filename,
-                    rawUrl: e.raw_url,
-                });
-                break;
-            case 'added':
-                addedFiles.push({
-                    fileName: e.filename,
-                    rawUrl: e.raw_url,
-                });
-                break;
-            case 'removed':
-                removedFiles.push({
-                    fileName: e.filename,
-                    rawUrl: e.raw_url,
-                });
-                break;
-        }
-    });
-
-    return {
-        addedFiles,
-        moddedFiles,
-        removedFiles,
-    };
-};
-
-export const handlePullRequest = async (context: Context): Promise<void> => {
+export const handlePullRequest = async (context: Context) => {
+    //context.github.apps
     const pr = context.payload.pull_request;
     // ensure that this handler is running for a pull request
     if (!pr || pr.state !== 'open' || context.isBot) return;
 
-    const org = pr.base.repo.owner.login as string; // name (id) of the owner
-    const repo = pr.base.repo.name as string; // name of the repository
-    const issueNo = pr.number as number;
-
+    // get a list of all the files that were changed in the current PR
     const allFiles = await context.github.paginate(
         context.github.pulls.listFiles,
-        context.pullRequest({ owner: org, repo: repo, pull_number: issueNo }),
+        context.pullRequest(),
         (res) => res.data,
     );
-
-    const changes = prFilesToFormat(allFiles);
+    // format the changes into different sections
+    const changes = Helpers.PullRequestFormatter.prFilesToFormat(allFiles);
 
     // if there are no relevant changes to the push, do not post a message
     if (changes.addedFiles.length + changes.moddedFiles.length + changes.removedFiles.length < 1) {
         return;
     }
 
-    const commentBody =
-        commentTemplate(
-            prChangesToBullet(changes.addedFiles),
-            prChangesToBullet(changes.moddedFiles),
-            prChangesToBullet(changes.removedFiles),
-        ) +
-        '\nScanned ' +
-        allFiles.length +
-        ' files';
+    // the pr description left by the owner
+    const prevBody = pr.body;
 
-    const pull = context.issue();
+    // scan report in markdown
+    const commentBody = commentTemplate(
+        prChangesToBullet(changes.addedFiles),
+        prChangesToBullet(changes.moddedFiles),
+        prChangesToBullet(changes.removedFiles),
+    );
 
-    //todo: if a comment already exists in the PR, update the comment rather than making a new one
-    await context.github.issues.updateComment({ ...pull, body: commentBody, comment_id: 32 });
-
-    // Post a comment on the issue
-    await context.github.issues.createComment({ ...pull, body: commentBody });
+    // update the pr description
+    await context.github.pulls.update({ ...pr, body: commentBody });
 };

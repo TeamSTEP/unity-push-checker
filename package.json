@@ -23,8 +23,12 @@
         "test:watch": "jest --watch --notify --notifyMode=change --coverage"
     },
     "dependencies": {
+<<<<<<< HEAD
         "lodash": "^4.17.20",
         "probot": "^10.9.5"
+=======
+        "probot": "^10.9.4"
+>>>>>>> c3a97cc6d1a3da9cde0d8b2d1e27b22aec6cb1d0
     },
     "devDependencies": {
         "@octokit/types": "^5.5.0",

@@ -15,18 +15,4 @@ export = async (app: Application) => {
             app.log.error(e);
         }
     });
-
-    // this is for debugging only
-    app.on('issues.opened', async (context) => {
-        try {
-            const newIssue = context.payload.issue;
-            app.log(`User ${newIssue.user.login} opened a new issue with the name ${newIssue.title}`);
-
-            const pull = context.issue();
-
-            await context.github.issues.createComment({ ...pull, body: 'Hello World!' });
-        } catch (e) {
-            app.log(e);
-        }
-    });
 };

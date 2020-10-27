@@ -6,8 +6,8 @@ import nock from 'nock';
 // Requiring our app implementation
 import myProbotApp from '../src';
 import { Probot, ProbotOctokit } from 'probot';
+
 // Requiring our fixtures
-import issueOpenPayload from './fixtures/issues.opened.json';
 import prReopenPayload from './fixtures/pull_request.reopened.json';
 import prFilesRes from './fixtures/pull_request.files.json';
 import prCheckExpectedRes from './fixtures/pr_check_msg.json';
@@ -35,23 +35,6 @@ describe('Github bot tests', () => {
         probot.load(myProbotApp);
         // Test that we correctly return a test token
         nock('https://api.github.com').post('/app/installations/78039/access_tokens').reply(200, { token: 'test' });
-    });
-
-    it('creates a comment when an issue is opened', async (done) => {
-        nock('https://api.github.com')
-            .post('/repos/hoonsubin/TestyMcTest/issues/20/comments', (body: any) => {
-                // Test that a comment is posted
-                done(expect(body).toMatchObject({ body: 'Hello World!' }));
-                return true;
-            })
-            .reply(200);
-
-        // Receive a mock webhook event
-        await probot.receive({
-            id: '1',
-            name: 'issues.opened',
-            payload: issueOpenPayload,
-        });
     });
 
     it('creates a new scan report comment', async (done) => {

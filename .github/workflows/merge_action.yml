@@ -4,8 +4,23 @@ on:
     branches:
       - 'master'
 jobs:
-  # deploys the current repo to glitch
+  # build the source code
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+            matrix:
+                node-version: [12.x]
+    steps:
+      - uses: actions/setup-node@v2-beta
+      - uses: actions/checkout@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Build
+        run: |
+            yarn
+            yarn build
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       # Deploy this repo to Glitch.com

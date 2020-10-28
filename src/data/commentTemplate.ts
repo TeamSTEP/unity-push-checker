@@ -5,7 +5,6 @@ const commentTemplate = (added: string, mod: string, rem: string): string =>
 ## Unity Project Report
 
 These are the files that were changed from the merging branch.
-Please don't edit this part.
 
 ### Newly Added Files
 

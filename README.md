@@ -2,20 +2,37 @@
 
 > A GitHub App that checks for important changes made to the Unity project without any noise.
 
-![screenshot](img/test-build.jpg)
+![screenshot](img/bot-message.jpg)
 
 ## Setup
 
 ```sh
-# Install dependencies
+# install dependencies
 yarn
 
-# Run with hot reload
-yarn build:watch
+# run the project in development mode
+yarn dev
 
-# Compile and run
+# build the project and run for production
 yarn build
 yarn start
+
+# run unit tests
+yarn test
+```
+
+Please create a new `.env` file with the following keys
+
+```env
+# The ID of your GitHub App
+APP_ID=
+WEBHOOK_SECRET=development
+
+# Use `trace` to get verbose logging or `info` to show less
+LOG_LEVEL=debug
+
+# Go to https://smee.io/new set this to the URL that you are redirected to.
+WEBHOOK_PROXY_URL=
 ```
 
 ## Contributing

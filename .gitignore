@@ -141,6 +141,8 @@ dist
 
 .DS_Store
 
+lib/
+
 ### Database ###
 .db/*
 !.db/.gitkeep

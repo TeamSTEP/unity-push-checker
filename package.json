@@ -14,10 +14,10 @@
         "probot-app"
     ],
     "scripts": {
+        "start": "npm run build && probot run ./lib/index.js",
         "build": "tsc",
         "build:watch": "tsc && (tsc -w --preserveWatchOutput & nodemon)",
         "dev": "yarn build:watch",
-        "start": "probot run ./lib/index.js",
         "lint": "eslint '*/**/*.ts' --fix",
         "test": "export DEBUG=nock.* && jest && eslint '*/**/*.ts'",
         "test:watch": "jest --watch --notify --notifyMode=change --coverage"

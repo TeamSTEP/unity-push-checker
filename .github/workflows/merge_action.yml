@@ -4,8 +4,8 @@ on:
     branches:
       - 'master'
 jobs:
-  # build and deploy the program
-  deploy:
+  # build the source code
+  build:
     runs-on: ubuntu-latest
     strategy:
             matrix:
@@ -19,4 +19,13 @@ jobs:
         run: |
             yarn
             yarn build
-            export REPO_SOURCE=${{ secrets.REPO_SOURCE }} && yarn deploy
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      # Deploy this repo to Glitch.com
+      - name: Deploy to Glitch
+        uses: glitch-tools/sync-glitch-github-action@master
+        env:
+          GLITCH_PROJECT_ID: ${{ secrets.GLITCH_PROJECT_ID }}
+          GLITCH_TOKEN: ${{ secrets.GLITCH_TOKEN }}

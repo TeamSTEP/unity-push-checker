@@ -1,6 +1,9 @@
 import { PullRequestCode } from '../types';
-import { PullsListFilesResponseData } from '@octokit/types';
+import { Endpoints } from '@octokit/types';
 import fileExts from '../data/filesToCheck.json';
+
+// decare rest api request type
+type PullsListFilesResponseData = Endpoints['GET /repos/{owner}/{repo}/pulls/{pull_number}/files']['response']['data'];
 
 export const prFilesToFormat = (files: PullsListFilesResponseData) => {
     //todo: use context.config rather than a hard-coded filesToCheck.json to load extensions

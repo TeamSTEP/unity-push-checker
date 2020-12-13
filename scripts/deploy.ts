@@ -14,7 +14,7 @@ interface NpmPackage {
 // properties that we want to keep from the original
 const packageKeys = ['name', 'version', 'scripts', 'devDependencies', 'dependencies', 'engines'];
 // properties we will manually override
-const npmScripts = { start: 'probot run index.js' };
+const npmScripts = { start: 'probot run ./index.js' };
 
 /**
  * Dynamically generate a package.json file for the distribution package
@@ -60,7 +60,7 @@ const importFromFolder = async (repoUrl: string, targetPath?: string, debugMessa
 
     fs.writeFile(`${distPath}/package.json`, JSON.stringify(packageConfig), function (err) {
         if (err) throw err;
-        console.log('deploying local file to Glitch...');
+        console.log(`deploying contents inside ${distPath} to Glitch...`);
         importFromFolder(sourceRepo, distPath).then(() => {
             console.log('successfully deployed application to glitch');
             process.exit(0);

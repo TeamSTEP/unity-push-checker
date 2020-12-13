@@ -1,7 +1,7 @@
-import { Application } from 'probot';
+import { ApplicationFunctionOptions } from 'probot/lib/types';
 import * as Controllers from './controllers';
 
-export = async (app: Application) => {
+export default ({ app }: ApplicationFunctionOptions) => {
     app.on(['pull_request.opened', 'pull_request.reopened', 'pull_request.synchronize'], async (context) => {
         try {
             const pr = context.payload.pull_request;

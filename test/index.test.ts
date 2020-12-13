@@ -32,7 +32,7 @@ describe('Github bot tests', () => {
     beforeEach(async () => {
         probot = new Probot({ privateKey: mockCert, githubToken: 'test', Octokit: ProbotOctokit });
         // Load our app into probot
-        probot.load(myProbotApp);
+        probot.load(myProbotApp as any);
         // Test that we correctly return a test token
         nock('https://api.github.com').post('/app/installations/78039/access_tokens').reply(200, { token: 'test' });
     });

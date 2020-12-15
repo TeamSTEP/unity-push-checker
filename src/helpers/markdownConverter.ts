@@ -8,7 +8,7 @@ export const prChangesToBullet = (changes: PullRequestCode[]): string => {
     if (changes.length < 1) return '';
     return changes
         .map((a) => {
-            return `- [${a.fileName}](${a.rawUrl})`;
+            return `- [${a.fileName}](${a.diffViewUrl})`;
         })
         .join('\n');
 };

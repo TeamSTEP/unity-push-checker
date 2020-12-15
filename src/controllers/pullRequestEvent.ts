@@ -18,7 +18,7 @@ export const handlePullRequest = async (context: Context) => {
         (res) => res.data,
     );
     // format the changes into different sections
-    const changes = Helpers.PullRequestFormatter.prFilesToFormat(allFiles);
+    const changes = Helpers.PullRequestFormatter.prFilesToFormat(allFiles, context.issue());
 
     // if there are no relevant changes to the push, do not post a message
     if (changes.addedFiles.length + changes.moddedFiles.length + changes.removedFiles.length < 1) {

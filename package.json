@@ -4,7 +4,7 @@
     "private": true,
     "description": "A Github bot plug in that will check for Unity file changes and present it into bullet-points",
     "author": "Hoon Kim <hoonkim@teamstep.io>",
-    "license": "ISC",
+    "license": "Apache License",
     "repository": "https://github.com/hoonsubin/unity-push-checker.git",
     "homepage": "https://github.com/hoonsubin/unity-push-checker",
     "bugs": "https://github.com/hoonsubin/unity-push-checker/issues",
@@ -25,42 +25,30 @@
     },
     "dependencies": {
         "lodash": "^4.17.20",
-        "probot": "^10.18.0"
+        "probot": "^11.0.0"
     },
     "devDependencies": {
         "@octokit/types": "^6.1.0",
         "@types/jest": "^26.0.0",
-        "@types/lodash": "^4.14.162",
-        "@types/nock": "^11.1.0",
+        "@types/lodash": "^4.14.165",
         "@types/node": "^14.14.3",
         "@typescript-eslint/eslint-plugin": "^4.5.0",
         "@typescript-eslint/parser": "^4.5.0",
         "eslint": "^7.12.0",
-        "eslint-config-prettier": "^6.14.0",
-        "eslint-plugin-prettier": "^3.1.4",
-        "eslint-plugin-typescript": "^0.14.0",
+        "eslint-config-prettier": "^7.0.0",
+        "eslint-plugin-prettier": "^3.3.0",
         "glitch-deploy-tool": "^0.1.5-alpha",
         "jest": "^26.6.1",
         "nock": "^13.0.4",
         "nodemon": "^2.0.6",
-        "prettier": "^2.1.2",
+        "prettier": "^2.2.1",
         "smee-client": "^1.2.2",
-        "standard": "^15.0.0",
         "ts-jest": "^26.4.2",
         "ts-node-dev": "^1.1.1",
         "typescript": "^4.1.3"
     },
     "engines": {
-        "node": ">=12.x"
-    },
-    "standard": {
-        "parser": "@typescript-eslint/parser",
-        "env": [
-            "jest"
-        ],
-        "plugins": [
-            "typescript"
-        ]
+        "node": ">=10.x"
     },
     "jest": {
         "testEnvironment": "node"

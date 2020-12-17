@@ -1,18 +1,22 @@
-import { ApplicationFunctionOptions } from 'probot/lib/types';
-import * as Controllers from './controllers';
+//import { run } from 'probot';
+import prCheckerBot from './app';
 
-export default async ({ app }: ApplicationFunctionOptions) => {
-    app.on(['pull_request.opened', 'pull_request.reopened', 'pull_request.synchronize'], async (context) => {
-        try {
-            const pr = context.payload.pull_request;
+//const { APP_ID, PRIVATE_KEY, WEBHOOK_SECRET } = process.env;
 
-            app.log(
-                `Pull request number ${pr.number} from ${pr.base.repo.owner.login}/${pr.base.repo.name} emitted a new event`,
-            );
+// (async () => {
+//     const server = new Server({
+//         Probot: Probot.defaults({
+//             appId: APP_ID,
+//             privateKey: PRIVATE_KEY,
+//             secret: WEBHOOK_SECRET,
+//         }),
+//     });
 
-            await Controllers.PullRequestHandlers.handlePullRequest(context);
-        } catch (e) {
-            app.log.error(e);
-        }
-    });
-};
+//     await server.load(app);
+
+//     await server.start();
+// })();
+
+//run(app);
+
+export default prCheckerBot;

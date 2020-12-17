@@ -4,7 +4,7 @@
 
 import nock from 'nock';
 // Requiring our app implementation
-import myProbotApp from '../src';
+import botApp from '../src/app';
 import { Probot, ProbotOctokit } from 'probot';
 
 // Requiring our fixtures
@@ -30,9 +30,17 @@ describe('Github bot tests', () => {
     });
 
     beforeEach(async () => {
-        probot = new Probot({ privateKey: mockCert, githubToken: 'test', Octokit: ProbotOctokit });
+        probot = new Probot({
+            privateKey: mockCert,
+            githubToken: 'test',
+            Octokit: ProbotOctokit.defaults({
+                retry: { enabled: false },
+                throttle: { enabled: false },
+            }),
+        });
+
         // Load our app into probot
-        probot.load(myProbotApp);
+        probot.load(botApp);
         // Test that we correctly return a test token
         nock('https://api.github.com').post('/app/installations/78039/access_tokens').reply(200, { token: 'test' });
     });

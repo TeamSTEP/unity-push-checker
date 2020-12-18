@@ -14,6 +14,7 @@ const packageKeys = ['name', 'version', 'scripts', 'devDependencies', 'dependenc
 // properties we will manually override
 const npmScripts = { start: 'probot run ./index.js' };
 
+// the folder that contains the production build
 const productionBin = 'lib';
 
 /**
@@ -39,7 +40,7 @@ const generatePackConfig = () => {
 (async () => {
     const distPath = path.join(process.cwd(), productionBin);
 
-    if (!process.env.REPO_SOURCE) throw new Error('No deploy repository provided');
+    //if (!process.env.REPO_SOURCE) throw new Error('No deploy repository provided');
 
     const packageConfig = generatePackConfig();
     console.log('building a custom package file...');

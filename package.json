@@ -11,7 +11,8 @@
     "keywords": [
         "probot",
         "github",
-        "probot-app"
+        "probot-app",
+        "unity"
     ],
     "scripts": {
         "start": "yarn run build && probot run ./lib/index.js",
@@ -25,7 +26,7 @@
     },
     "dependencies": {
         "lodash": "^4.17.20",
-        "probot": "^11.0.0"
+        "probot": "^11.0.1"
     },
     "devDependencies": {
         "@octokit/types": "^6.1.0",
@@ -37,7 +38,7 @@
         "eslint": "^7.12.0",
         "eslint-config-prettier": "^7.0.0",
         "eslint-plugin-prettier": "^3.3.0",
-        "glitch-deploy-tool": "^0.1.5-alpha",
+        "glitch-deploy-tool": "^0.1.6-alpha",
         "jest": "^26.6.1",
         "nock": "^13.0.4",
         "nodemon": "^2.0.6",

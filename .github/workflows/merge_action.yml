@@ -13,14 +13,14 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2-beta
+        uses: actions/setup-node@v1
         with:
             node-version: ${{ matrix.node-version }}
       - name: Deploy Project
         run: |
             yarn
             yarn build
-            yarn deploy
+            npx glitch-deploy-tool from-local -p './lib'
         env:
           REPO_SOURCE: ${{ secrets.GLITCH_REPO }}
         working-directory: ./

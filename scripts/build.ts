@@ -4,8 +4,6 @@ import fs from 'fs';
 import path from 'path';
 import projectPacks from '../package.json';
 
-import * as glitchDeploy from 'glitch-deploy-tool';
-
 interface NpmPackage {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
@@ -15,6 +13,8 @@ interface NpmPackage {
 const packageKeys = ['name', 'version', 'scripts', 'devDependencies', 'dependencies', 'engines'];
 // properties we will manually override
 const npmScripts = { start: 'probot run ./index.js' };
+
+const productionBin = 'lib';
 
 /**
  * Dynamically generate a package.json file for the distribution package
@@ -36,30 +36,16 @@ const generatePackConfig = () => {
     return packCfg;
 };
 
-const importFromFolder = async (repoUrl: string, targetPath?: string, debugMessage?: boolean) => {
-    const glitchRepo = new glitchDeploy.GlitchGit(repoUrl, debugMessage);
-
-    await glitchRepo.publishFilesToGlitch(targetPath);
-
-    console.log('successfully imported projects from ' + (targetPath || process.cwd()));
-};
-
 (async () => {
-    console.log('starting deployment...');
-    const distPath = path.join(process.cwd(), 'lib');
-    const sourceRepo = process.env.REPO_SOURCE;
+    const distPath = path.join(process.cwd(), productionBin);
 
-    if (!sourceRepo) throw new Error('No deploy repository provided');
+    if (!process.env.REPO_SOURCE) throw new Error('No deploy repository provided');
 
     const packageConfig = generatePackConfig();
-
+    console.log('building a custom package file...');
     fs.writeFile(`${distPath}/package.json`, JSON.stringify(packageConfig), function (err) {
         if (err) throw err;
-        console.log(`deploying contents inside ${distPath} to Glitch...`);
-        importFromFolder(sourceRepo, distPath).then(() => {
-            console.log('successfully deployed application to glitch');
-            process.exit(0);
-        });
+        else console.log('moved custom package to the distribution folder');
     });
 })().catch((err) => {
     console.log(err);
